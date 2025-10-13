@@ -3,6 +3,7 @@ package dogapi;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,6 +31,23 @@ public class DogApiBreedFetcher implements BreedFetcher {
         //      to refer to the examples of using OkHttpClient from the last lab,
         //      as well as the code for parsing JSON responses.
         // return statement included so that the starter code can compile and run.
-        return new ArrayList<>();
+        List<String> subBreeds = new ArrayList<>();
+        String url = "https://dog.ceo/api/breeds/" + breed + "/list";
+        Request request = new Request.Builder().url(url).build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                System.err.println("Failed request: " + response);
+                return subBreeds;
+            }
+            String responseBody = response.body().string();
+            JSONObject json = new JSONObject(responseBody);
+            JSONArray arr = json.getJSONArray("data");
+            for (int i = 0; i < arr.length(); i++) {
+                subBreeds.add(arr.getString(i));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return subBreeds;
     }
 }
