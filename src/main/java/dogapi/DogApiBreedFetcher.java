@@ -32,7 +32,7 @@ public class DogApiBreedFetcher implements BreedFetcher {
         //      as well as the code for parsing JSON responses.
         // return statement included so that the starter code can compile and run.
         List<String> subBreeds = new ArrayList<>();
-        String url = "https://dog.ceo/api/breeds/" + breed + "/list";
+        String url = "https://dog.ceo/api/breed/" + breed + "/list";
         Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
