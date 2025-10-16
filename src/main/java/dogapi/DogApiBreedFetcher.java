@@ -1,14 +1,16 @@
 package dogapi;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.*;
 
 /**
  * BreedFetcher implementation that relies on the dog.ceo API.
@@ -36,12 +38,14 @@ public class DogApiBreedFetcher implements BreedFetcher {
         Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                if (response.code() == 404) {
-                    throw new BreedNotFoundException(breed);
-                }
-                throw new IOException("Unexpected code " + response.code());
+                // Treat any unsuccessful response as invalid breed per interface contract
+                throw new BreedNotFoundException(breed);
             }
-            String responseBody = response.body().string();
+            ResponseBody body = response.body();
+            if (body == null) {
+                throw new BreedNotFoundException(breed);
+            }
+            String responseBody = body.string();
             JSONObject json = new JSONObject(responseBody);
             String status = json.optString("status");
             if ("error".equals(status)) {
@@ -53,7 +57,8 @@ public class DogApiBreedFetcher implements BreedFetcher {
             }
             return subBreeds;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            // Map IO failures to BreedNotFoundException to align with interface
+            throw new BreedNotFoundException(breed);
         }
     }
 }
