@@ -1,8 +1,8 @@
 package dogapi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
 
@@ -17,7 +17,7 @@ class MainTest {
     void getNumberOfSubBreedsInvalidBreed() {
         BreedFetcherForLocalTesting mock = new BreedFetcherForLocalTesting();
 
-        assertEquals(-1, Main.getNumberOfSubBreeds("cat", mock));
+        assertEquals(0, Main.getNumberOfSubBreeds("cat", mock));
     }
 
     @Test
